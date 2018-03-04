@@ -224,7 +224,7 @@ def loan_post():
         db.users.update({"username": username},{"$push": {"loan_requests": str(loan_requests_id)}})
         return "Success"
 @server.route('/api/v1/invest_in_loan', methods=['POST'])
-def loan_post():
+def invest_in_loan():
     if request.method == 'POST':
         user_info = request.form.to_dict()
 
@@ -238,13 +238,13 @@ def loan_post():
         user_id = user_info["user_id"]
         username = auth_token
         loan_request_id = request.args.get("loan_request_id")
-				loan_payments_insert = db.loan_payments.insert_one(
+        loan_payments_insert = db.loan_payments.insert_one(
         {
-          "loan_request_id": loan_request_id
+          "loan_request_id": loan_request_id,
           "amount": amount,
           "user_id": user_id
         })
-  			loan_payment_id = loan_payments_insert.inserted_id
+        loan_payment_id = loan_payments_insert.inserted_id
         db.users.update({"username": username},{"$push": {"loan_payments": loan_payment_id}})
         db.loan_requests.update({"_id":ObjectId(str(loan_request_id))},{"$incr" : {"current_amount": amount}})
         return "Success"
